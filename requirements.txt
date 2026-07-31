@@ -1,0 +1,8 @@
+gradio==5.49.1
+huggingface_hub==0.35.3
+transformers==4.57.6
+torch==2.8.0
+numpy==2.2.6
+scipy==1.15.3
+Pillow==11.3.0
+ultralytics==8.4.102

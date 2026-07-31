@@ -1,0 +1,4 @@
+interface:
+  display_name: "Satellite Imagery Analysis"
+  short_description: "Detect objects and map land cover in satellite images"
+  default_prompt: "Use $analyze-satellite-imagery to detect objects and segment land cover in this satellite image."

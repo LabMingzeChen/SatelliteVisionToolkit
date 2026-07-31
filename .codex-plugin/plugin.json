@@ -1,0 +1,26 @@
+{
+  "name": "satellite-vision-toolkit",
+  "version": "0.1.0",
+  "description": "Detect remote-sensing objects and segment land cover in satellite and aerial imagery.",
+  "author": {
+    "name": "Mingze Chen",
+    "url": "https://github.com/LabMingzeChen"
+  },
+  "repository": "https://github.com/LabMingzeChen/SatelliteVisionToolkit",
+  "license": "MIT",
+  "keywords": ["satellite", "remote-sensing", "object-detection", "segmentation", "hugging-face"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Satellite Vision Toolkit",
+    "shortDescription": "Detect objects and map land cover in overhead imagery.",
+    "longDescription": "Analyze satellite and aerial images with a remote-sensing object detector and an OpenEarthMap land-cover segmentation model, then export visual, tabular, and pixel-coordinate results.",
+    "developerName": "Mingze Chen",
+    "category": "Developer Tools",
+    "capabilities": ["Analyze", "Export"],
+    "defaultPrompt": [
+      "Detect objects in this satellite image.",
+      "Segment land cover and summarize the area share.",
+      "Explain the limits of these remote-sensing results."
+    ]
+  }
+}

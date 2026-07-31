@@ -9,7 +9,7 @@ python_version: "3.11"
 app_file: app.py
 pinned: false
 license: mit
-short_description: Professional LULC classification, segmentation, and detection.
+short_description: LULC classification, segmentation, and object detection.
 ---
 
 <div align="center">

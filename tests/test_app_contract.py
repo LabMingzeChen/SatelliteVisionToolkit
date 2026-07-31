@@ -18,3 +18,7 @@ def test_app_exposes_all_api_endpoints_and_models():
     assert "mfaytin/mask2former-satellite" in constants
     assert "bluelabel/satellite-equipment-detection-yolov8n-vhr10" in constants
     assert "cropland" in constants
+    assert "indus" in constants
+    assert "lluta" in constants
+    assert "zambezi" in constants
+    assert "Guided case studies" in source

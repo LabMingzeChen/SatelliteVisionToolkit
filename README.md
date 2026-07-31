@@ -50,6 +50,18 @@ Every run creates visual and machine-readable outputs:
 - Independent Gradio API endpoints at `/classify`, `/segment`, `/detect`, and `/analyze`.
 - A reusable Codex skill and command-line Space client.
 
+## Guided case studies
+
+The interface includes three one-click NASA Earth Observatory cases. Each case loads the reference image and shows the acquisition context, recommended analytical question, and source attribution.
+
+| Case | Sensor / date | Suggested use |
+|---|---|---|
+| [Indus River irrigated agriculture](https://earthobservatory.nasa.gov/images/52076/seasonal-changes-along-the-indus-river) | Landsat 5 TM / 2009-09-10 | Compare crop and river scene alternatives with cropland/water pixel shares |
+| [Lluta River desert agriculture](https://earthobservatory.nasa.gov/images/82296/lluta-river-chile) | EO-1 ALI / 2012-07-19 | Inspect ambiguity where narrow irrigated valleys cross dominant bare land |
+| [Zambezi wet-season floodplain](https://earthobservatory.nasa.gov/images/80835/wet-season-transforms-the-zambezi-river) | EO-1 ALI / 2013-03-31 | Evaluate water, vegetation, and bare-land composition |
+
+These are method-exploration examples, not ground-truth demonstrations. The imagery remains credited to NASA Earth Observatory and the source instrument teams.
+
 ## How it works
 
 ```text

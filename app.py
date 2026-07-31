@@ -65,6 +65,29 @@ OPEN_EARTH_MAP_LABELS = {
     7: "cropland",
     8: "building",
 }
+CASE_STUDIES = {
+    "indus": {
+        "title": "Indus River · irrigated agriculture",
+        "image": "https://eoimages.gsfc.nasa.gov/images/imagerecords/52000/52076/indus_tm5_20090910_lrg.jpg",
+        "source": "https://earthobservatory.nasa.gov/images/52076/seasonal-changes-along-the-indus-river",
+        "sensor": "Landsat 5 TM · natural color · 2009-09-10",
+        "focus": "Compare scene-level crop/river alternatives with pixel-level cropland and water shares.",
+    },
+    "lluta": {
+        "title": "Lluta River · desert agriculture",
+        "image": "https://eoimages.gsfc.nasa.gov/images/imagerecords/82000/82296/Lluta_ali_2012201_lrg.jpg",
+        "source": "https://earthobservatory.nasa.gov/images/82296/lluta-river-chile",
+        "sensor": "EO-1 ALI · natural color · 2012-07-19",
+        "focus": "Inspect classification ambiguity where narrow irrigated valleys cross dominant bare land.",
+    },
+    "zambezi": {
+        "title": "Zambezi River · wet-season floodplain",
+        "image": "https://eoimages.gsfc.nasa.gov/images/imagerecords/80000/80835/zambezi_ali_2013090_lrg.jpg",
+        "source": "https://earthobservatory.nasa.gov/images/80835/wet-season-transforms-the-zambezi-river",
+        "sensor": "EO-1 ALI · 2013-03-31",
+        "focus": "Evaluate water, vegetation, and bare-land composition across a seasonal floodplain.",
+    },
+}
 
 
 def _device() -> torch.device:
@@ -107,6 +130,19 @@ def _require_image(image: Image.Image | None) -> Image.Image:
     if image is None:
         raise gr.Error("Please upload a satellite or aerial image first.")
     return resize_for_inference(image)
+
+
+def load_case_study(case_key: str):
+    """Load a documented NASA case into the shared image input."""
+    case = CASE_STUDIES[case_key]
+    note = (
+        f"### {case['title']}\n"
+        f"**Acquisition:** {case['sensor']}  \n"
+        f"**Suggested analysis:** {case['focus']}  \n"
+        f"[Open NASA Earth Observatory source]({case['source']}) · "
+        "Reference imagery is provided for method exploration; model outputs are not ground truth."
+    )
+    return case["image"], note
 
 
 def _classify_impl(prepared: Image.Image, top_k: int, output_dir: Path) -> dict[str, object]:
@@ -353,6 +389,7 @@ CSS = """
 .prob-row {display:grid;grid-template-columns:155px 1fr 62px;gap:10px;align-items:center;margin:8px 0;font-size:.86rem;}
 .prob-row b {text-align:right}.prob-track {height:9px;background:#e5edf1;border-radius:20px;overflow:hidden}.prob-track i {display:block;height:100%;background:linear-gradient(90deg,#169c7d,#36b7c5);border-radius:20px;}
 .section-note {padding:12px 14px;border-left:4px solid #15947a;background:#eef9f6;border-radius:8px;color:#315c62;}
+.case-panel {padding:16px 18px;border:1px solid #dce6ed;border-radius:16px;background:#fff;margin:8px 0 14px}.case-panel h3{margin:0 0 4px;color:#123c49}.case-panel p{margin:0;color:#647984}
 @media(max-width:850px){.pipeline,.summary-grid{grid-template-columns:1fr}.prob-row{grid-template-columns:115px 1fr 56px}}
 """
 
@@ -371,6 +408,12 @@ with gr.Blocks(title="Satellite Vision Toolkit Pro", css=CSS, theme=gr.themes.So
       <div><b>03 · Object detection</b><span>Bounding boxes and inventory-style summaries for 10 VHR object types.</span></div>
     </div>
     """)
+    gr.HTML("<div class='case-panel'><h3>Guided case studies</h3><p>Load a documented NASA scene, review the analytical question, then run the complete assessment or an individual model.</p></div>")
+    with gr.Row():
+        indus_case = gr.Button("🌾 Indus agriculture")
+        lluta_case = gr.Button("🏜️ Lluta desert valley")
+        zambezi_case = gr.Button("🌊 Zambezi floodplain")
+    case_note = gr.Markdown("Select a case study to load its image and methodological prompt.")
     with gr.Row(equal_height=True):
         image_input = gr.Image(type="pil", label="Satellite / aerial RGB image", height=430)
         with gr.Column():
@@ -452,6 +495,19 @@ with gr.Blocks(title="Satellite Vision Toolkit Pro", css=CSS, theme=gr.themes.So
 
 **Interpretation guardrails:** EuroSAT is a European Sentinel-2 scene dataset; classification may shift on other sensors, regions, resolutions, or crops. Pixel shares are not automatically physical ground-area shares. Pixel-coordinate GeoJSON is not georeferenced. Models can miss small or obscured objects. Do not use outputs alone for legal, surveillance, emergency, navigation, or safety-critical decisions.
             """)
+
+    indus_case.click(
+        lambda: load_case_study("indus"),
+        outputs=[image_input, case_note],
+    )
+    lluta_case.click(
+        lambda: load_case_study("lluta"),
+        outputs=[image_input, case_note],
+    )
+    zambezi_case.click(
+        lambda: load_case_study("zambezi"),
+        outputs=[image_input, case_note],
+    )
 
     classify_button.click(
         classify_lulc,

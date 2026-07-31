@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import csv
+import html
 import json
+import math
 from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
@@ -27,9 +29,117 @@ LAND_COVER_PALETTE: dict[str, tuple[int, int, int]] = {
     "building": (218, 73, 73),
 }
 
+LULC_DISPLAY_NAMES = {
+    "annualcrop": "Annual crop",
+    "forest": "Forest",
+    "herbaceousvegetation": "Herbaceous vegetation",
+    "highway": "Highway",
+    "industrial": "Industrial",
+    "pasture": "Pasture",
+    "permanentcrop": "Permanent crop",
+    "residential": "Residential",
+    "river": "River",
+    "sealake": "Sea / lake",
+}
+
 
 def normalize_label(label: str) -> str:
     return label.lower().replace("_", " ").strip()
+
+
+def display_lulc_label(label: str) -> str:
+    """Convert EuroSAT model labels into compact report labels."""
+    key = "".join(character for character in label.lower() if character.isalnum())
+    return LULC_DISPLAY_NAMES.get(key, label.replace("_", " ").strip().title())
+
+
+def confidence_tier(probability: float) -> str:
+    if probability >= 0.80:
+        return "High"
+    if probability >= 0.55:
+        return "Moderate"
+    return "Low"
+
+
+def normalized_entropy(probabilities: Iterable[float]) -> float:
+    """Return Shannon entropy normalized to 0–1 for model ambiguity."""
+    values = [max(0.0, float(value)) for value in probabilities]
+    total = sum(values)
+    if not values or total <= 0.0 or len(values) == 1:
+        return 0.0
+    normalized = [value / total for value in values if value > 0.0]
+    entropy = -sum(value * math.log(value) for value in normalized)
+    return entropy / math.log(len(values))
+
+
+def build_lulc_table(
+    probabilities: Iterable[float],
+    id2label: dict[int, str],
+    top_k: int = 5,
+) -> list[list[object]]:
+    ranked = sorted(
+        enumerate(float(value) for value in probabilities),
+        key=lambda item: item[1],
+        reverse=True,
+    )[: max(1, int(top_k))]
+    return [
+        [rank, display_lulc_label(id2label.get(class_id, f"class_{class_id}")), round(score * 100, 2), confidence_tier(score)]
+        for rank, (class_id, score) in enumerate(ranked, start=1)
+    ]
+
+
+def render_lulc_assessment(rows: list[list[object]], entropy: float) -> str:
+    """Render an accessible probability profile and uncertainty note."""
+    if not rows:
+        return "<div class='assessment-card'>No classification result.</div>"
+    top_probability = float(rows[0][2])
+    bars = "".join(
+        "<div class='prob-row'><span>{}</span><div class='prob-track'><i style='width:{:.2f}%'></i></div><b>{:.2f}%</b></div>".format(
+            html.escape(str(row[1])), float(row[2]), float(row[2])
+        )
+        for row in rows
+    )
+    ambiguity = "low" if entropy < 0.35 else "moderate" if entropy < 0.65 else "high"
+    return (
+        "<div class='assessment-card'>"
+        f"<div class='eyebrow'>SCENE-LEVEL LULC</div><h2>{html.escape(str(rows[0][1]))}</h2>"
+        f"<p><strong>{top_probability:.2f}%</strong> top-class confidence · "
+        f"{ambiguity} ambiguity (normalized entropy {entropy:.2f})</p>{bars}"
+        "<p class='micro-note'>A whole-scene EuroSAT label, not a cadastral or planning designation.</p></div>"
+    )
+
+
+def build_analysis_summary(
+    lulc_rows: list[list[object]],
+    entropy: float,
+    land_cover_rows: list[list[object]],
+    detection_rows: list[list[object]],
+    elapsed_seconds: float,
+) -> str:
+    lulc_name = str(lulc_rows[0][1]) if lulc_rows else "Unavailable"
+    lulc_confidence = float(lulc_rows[0][2]) if lulc_rows else 0.0
+    cover_name = str(land_cover_rows[0][1]) if land_cover_rows else "Unavailable"
+    cover_share = float(land_cover_rows[0][3]) if land_cover_rows else 0.0
+    object_count = sum(int(row[1]) for row in detection_rows)
+    return f"""
+    <div class="summary-grid">
+      <div class="metric-card"><span>Scene LULC</span><strong>{html.escape(lulc_name)}</strong><small>{lulc_confidence:.1f}% confidence · entropy {entropy:.2f}</small></div>
+      <div class="metric-card"><span>Dominant cover</span><strong>{html.escape(cover_name)}</strong><small>{cover_share:.1f}% of processed pixels</small></div>
+      <div class="metric-card"><span>Detected objects</span><strong>{object_count}</strong><small>{len(detection_rows)} represented object classes</small></div>
+      <div class="metric-card"><span>Analysis time</span><strong>{elapsed_seconds:.1f}s</strong><small>classification + segmentation + detection</small></div>
+    </div>
+    """
+
+
+def write_lulc_csv(path: Path, rows: Iterable[Iterable[object]]) -> None:
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle)
+        writer.writerow(["rank", "class", "probability_percent", "confidence_tier"])
+        writer.writerows(rows)
+
+
+def write_json(path: Path, payload: object) -> None:
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
 def fallback_color(class_id: int) -> tuple[int, int, int]:

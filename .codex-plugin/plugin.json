@@ -1,7 +1,7 @@
 {
   "name": "satellite-vision-toolkit",
-  "version": "0.1.0",
-  "description": "Detect remote-sensing objects and segment land cover in satellite and aerial imagery.",
+  "version": "0.2.0",
+  "description": "Classify land use and land cover, segment surface classes, and detect objects in satellite and aerial imagery.",
   "author": {
     "name": "Mingze Chen",
     "url": "https://github.com/LabMingzeChen"
@@ -12,14 +12,15 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Satellite Vision Toolkit",
-    "shortDescription": "Detect objects and map land cover in overhead imagery.",
-    "longDescription": "Analyze satellite and aerial images with a remote-sensing object detector and an OpenEarthMap land-cover segmentation model, then export visual, tabular, and pixel-coordinate results.",
+    "shortDescription": "Professional multi-level analysis for overhead imagery.",
+    "longDescription": "Analyze satellite and aerial images with scene-level EuroSAT LULC classification, OpenEarthMap pixel segmentation, and remote-sensing object detection, then export visual, tabular, JSON, and pixel-coordinate evidence.",
     "developerName": "Mingze Chen",
     "category": "Developer Tools",
-    "capabilities": ["Analyze", "Export"],
+    "capabilities": ["Classify", "Analyze", "Export"],
     "defaultPrompt": [
-      "Detect objects in this satellite image.",
-      "Segment land cover and summarize the area share.",
+      "Run a complete professional assessment of this satellite image.",
+      "Classify the scene into land-use and land-cover categories.",
+      "Segment land cover and detect supported objects.",
       "Explain the limits of these remote-sensing results."
     ]
   }

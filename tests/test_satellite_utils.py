@@ -52,6 +52,23 @@ def test_class_table_is_sorted_and_thresholded():
     assert rows == [[4, "road", 3, 75.0, "#5C5C5C"]]
 
 
+def test_lulc_table_is_ranked_and_human_readable():
+    rows = utils.build_lulc_table(
+        [0.1, 0.65, 0.25],
+        {0: "AnnualCrop", 1: "SeaLake", 2: "HerbaceousVegetation"},
+        top_k=2,
+    )
+    assert rows == [
+        [1, "Sea / lake", 65.0, "Moderate"],
+        [2, "Herbaceous vegetation", 25.0, "Low"],
+    ]
+
+
+def test_normalized_entropy_has_expected_extremes():
+    assert utils.normalized_entropy([1.0, 0.0, 0.0]) == 0.0
+    assert round(utils.normalized_entropy([1 / 3, 1 / 3, 1 / 3]), 6) == 1.0
+
+
 def test_segmentation_outputs_match_input_size():
     image = Image.new("RGB", (3, 2), "black")
     class_map = np.array([[4, 4, 6], [4, 6, 6]], dtype=np.uint8)

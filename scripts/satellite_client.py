@@ -15,7 +15,7 @@ DEFAULT_SPACE = "Mingze/SatelliteVisionToolkit"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("detect", "segment"))
+    parser.add_argument("operation", choices=("classify", "segment", "detect", "analyze"))
     parser.add_argument("image", type=Path)
     parser.add_argument("--space", default=DEFAULT_SPACE)
     parser.add_argument("--output", type=Path)
@@ -23,6 +23,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--iou", type=float, default=0.45)
     parser.add_argument("--opacity", type=float, default=0.55)
     parser.add_argument("--min-share", type=float, default=0.1)
+    parser.add_argument("--top-k", type=int, default=5)
     return parser.parse_args()
 
 
@@ -31,19 +32,35 @@ def main() -> int:
     if not args.image.is_file():
         raise SystemExit(f"Image not found: {args.image}")
     client = Client(args.space)
-    if args.operation == "detect":
+    if args.operation == "classify":
+        result = client.predict(
+            handle_file(str(args.image)),
+            args.top_k,
+            api_name="/classify",
+        )
+    elif args.operation == "detect":
         result = client.predict(
             handle_file(str(args.image)),
             args.confidence,
             args.iou,
             api_name="/detect",
         )
-    else:
+    elif args.operation == "segment":
         result = client.predict(
             handle_file(str(args.image)),
             args.opacity,
             args.min_share,
             api_name="/segment",
+        )
+    else:
+        result = client.predict(
+            handle_file(str(args.image)),
+            args.top_k,
+            args.opacity,
+            args.min_share,
+            args.confidence,
+            args.iou,
+            api_name="/analyze",
         )
     rendered = json.dumps(result, ensure_ascii=False, indent=2, default=str)
     if args.output:

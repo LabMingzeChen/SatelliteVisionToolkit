@@ -399,11 +399,14 @@ CSS = """
 .prob-row b {text-align:right}.prob-track {height:9px;background:#e5edf1;border-radius:20px;overflow:hidden}.prob-track i {display:block;height:100%;background:linear-gradient(90deg,#169c7d,#36b7c5);border-radius:20px;}
 .section-note {padding:12px 14px;border-left:4px solid #15947a;background:#eef9f6;border-radius:8px;color:#315c62;}
 .case-heading{display:flex;justify-content:space-between;align-items:end;margin:.35rem 2px .5rem}.case-heading h2{margin:0;color:#123746;font-size:1.2rem}.case-heading p{margin:0;color:#647984;font-size:.82rem}
-.case-card {background:#fff;border:1px solid #d7e2e8!important;border-radius:15px!important;padding:8px!important;box-shadow:0 6px 16px rgba(20,50,70,.06);min-width:0}.case-card:hover{border-color:#62a99a!important;box-shadow:0 9px 22px rgba(20,80,70,.1)}
-.case-thumb {border-radius:10px!important;overflow:hidden;background:#e7eef1}.case-thumb img{object-fit:cover!important;image-rendering:auto!important}.case-card h3{margin:2px 2px 0!important;color:#143643;font-size:.92rem!important}.case-card p{margin:0 2px 3px!important;color:#667b85;font-size:.73rem!important;line-height:1.35}.case-card button{min-height:34px!important;font-size:.78rem!important}
+.case-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important}.case-grid>div{min-width:0!important}
+.case-card {background:#fff;border:1px solid #d7e2e8!important;border-radius:15px!important;padding:8px!important;box-shadow:0 6px 16px rgba(20,50,70,.06);min-width:0!important}.case-card:hover{border-color:#62a99a!important;box-shadow:0 9px 22px rgba(20,80,70,.1)}
+.case-thumb {border-radius:10px!important;overflow:hidden;background:#e7eef1}.case-thumb img{width:100%!important;height:100%!important;object-fit:cover!important;image-rendering:auto!important}.case-card h3{margin:2px 2px 0!important;color:#143643;font-size:.92rem!important}.case-card p{margin:0 2px 3px!important;color:#667b85;font-size:.73rem!important;line-height:1.35}.case-card button{min-height:34px!important;font-size:.78rem!important}
 .case-note{background:#eaf7f3;border:1px solid #b9ded3;border-radius:11px;padding:1px 12px;margin:.4rem 0 .75rem}.case-note h3{font-size:.95rem;margin:.6rem 0 .2rem}.case-note p{font-size:.8rem}
 .workspace-title h3{margin-bottom:.25rem!important}.controls-card{background:#fff;border:1px solid #dae5ea;border-radius:15px;padding:14px!important}
+@media(max-width:950px){.case-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
 @media(max-width:850px){.hero-grid{grid-template-columns:1fr}.hero-stats{display:none}.method-strip,.summary-grid{grid-template-columns:1fr}.prob-row{grid-template-columns:115px 1fr 56px}.case-heading{display:block}}
+@media(max-width:560px){.case-grid{grid-template-columns:1fr!important}}
 """
 
 
@@ -422,21 +425,21 @@ with gr.Blocks(title="Satellite Vision Toolkit Pro", css=CSS, theme=gr.themes.So
     </div>
     """)
     gr.HTML("<div class='case-heading'><h2>Urban sample scenes</h2><p>High-resolution 256×256 USGS aerial chips · click any card to load</p></div>")
-    with gr.Row():
+    with gr.Row(elem_classes="case-grid"):
         with gr.Column(elem_classes="case-card"):
-            gr.Image("assets/cases/dense_residential.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Image("assets/cases/dense_residential.jpg", show_label=False, height=144, interactive=False, show_download_button=False, show_fullscreen_button=False, show_share_button=False, elem_classes="case-thumb")
             gr.Markdown("### Dense residential\nBuildings · streets · impervious cover")
             residential_case = gr.Button("Load residential scene")
         with gr.Column(elem_classes="case-card"):
-            gr.Image("assets/cases/urban_intersection.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Image("assets/cases/urban_intersection.jpg", show_label=False, height=144, interactive=False, show_download_button=False, show_fullscreen_button=False, show_share_button=False, elem_classes="case-thumb")
             gr.Markdown("### Urban intersection\nRoads · vehicles · pavement")
             intersection_case = gr.Button("Load intersection scene")
         with gr.Column(elem_classes="case-card"):
-            gr.Image("assets/cases/harbor_marina.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Image("assets/cases/harbor_marina.jpg", show_label=False, height=144, interactive=False, show_download_button=False, show_fullscreen_button=False, show_share_button=False, elem_classes="case-thumb")
             gr.Markdown("### Marina / harbor\nWater · boats · harbor context")
             harbor_case = gr.Button("Load harbor scene")
         with gr.Column(elem_classes="case-card"):
-            gr.Image("assets/cases/parking_lot.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Image("assets/cases/parking_lot.jpg", show_label=False, height=144, interactive=False, show_download_button=False, show_fullscreen_button=False, show_share_button=False, elem_classes="case-thumb")
             gr.Markdown("### Parking lot\nPavement · dense small vehicles")
             parking_case = gr.Button("Load parking scene")
     case_note = gr.Markdown("Select an urban case to load its acquisition details and analysis prompt.", elem_classes="case-note")

@@ -66,26 +66,33 @@ OPEN_EARTH_MAP_LABELS = {
     8: "building",
 }
 CASE_STUDIES = {
-    "indus": {
-        "title": "Indus River · irrigated agriculture",
-        "image": "https://eoimages.gsfc.nasa.gov/images/imagerecords/52000/52076/indus_tm5_20090910_lrg.jpg",
-        "source": "https://earthobservatory.nasa.gov/images/52076/seasonal-changes-along-the-indus-river",
-        "sensor": "Landsat 5 TM · natural color · 2009-09-10",
-        "focus": "Compare scene-level crop/river alternatives with pixel-level cropland and water shares.",
+    "residential": {
+        "title": "Dense residential block",
+        "image": "assets/cases/dense_residential.jpg",
+        "source": "https://huggingface.co/datasets/blanchon/UC_Merced",
+        "sensor": "USGS Urban Area Imagery · RGB · 0.3 m · 256×256 px",
+        "focus": "Inspect buildings, impervious surfaces, street texture, and residential scene confidence.",
     },
-    "lluta": {
-        "title": "Lluta River · desert agriculture",
-        "image": "https://eoimages.gsfc.nasa.gov/images/imagerecords/82000/82296/Lluta_ali_2012201_lrg.jpg",
-        "source": "https://earthobservatory.nasa.gov/images/82296/lluta-river-chile",
-        "sensor": "EO-1 ALI · natural color · 2012-07-19",
-        "focus": "Inspect classification ambiguity where narrow irrigated valleys cross dominant bare land.",
+    "intersection": {
+        "title": "Urban intersection",
+        "image": "assets/cases/urban_intersection.jpg",
+        "source": "https://huggingface.co/datasets/blanchon/UC_Merced",
+        "sensor": "USGS Urban Area Imagery · RGB · 0.3 m · 256×256 px",
+        "focus": "Test road/pavement segmentation and small-vehicle sensitivity at a city junction.",
     },
-    "zambezi": {
-        "title": "Zambezi River · wet-season floodplain",
-        "image": "https://eoimages.gsfc.nasa.gov/images/imagerecords/80000/80835/zambezi_ali_2013090_lrg.jpg",
-        "source": "https://earthobservatory.nasa.gov/images/80835/wet-season-transforms-the-zambezi-river",
-        "sensor": "EO-1 ALI · 2013-03-31",
-        "focus": "Evaluate water, vegetation, and bare-land composition across a seasonal floodplain.",
+    "harbor": {
+        "title": "Urban marina / harbor",
+        "image": "assets/cases/harbor_marina.jpg",
+        "source": "https://huggingface.co/datasets/blanchon/UC_Merced",
+        "sensor": "USGS Urban Area Imagery · RGB · 0.3 m · 256×256 px",
+        "focus": "Compare water segmentation with supported ship/harbor object predictions.",
+    },
+    "parking": {
+        "title": "Urban parking lot",
+        "image": "assets/cases/parking_lot.jpg",
+        "source": "https://huggingface.co/datasets/blanchon/UC_Merced",
+        "sensor": "USGS Urban Area Imagery · RGB · 0.3 m · 256×256 px",
+        "focus": "Probe pavement coverage and the detector's limits for tightly packed small vehicles.",
     },
 }
 
@@ -139,8 +146,8 @@ def load_case_study(case_key: str):
         f"### {case['title']}\n"
         f"**Acquisition:** {case['sensor']}  \n"
         f"**Suggested analysis:** {case['focus']}  \n"
-        f"[Open NASA Earth Observatory source]({case['source']}) · "
-        "Reference imagery is provided for method exploration; model outputs are not ground truth."
+        f"[Open UC Merced / USGS source]({case['source']}) · "
+        "High-resolution aerial imagery is intentionally outside EuroSAT's Sentinel-2 scale; review domain shift and do not treat the dataset label as model ground truth."
     )
     return case["image"], note
 
@@ -374,14 +381,16 @@ def analyze_satellite_image(
 
 
 CSS = """
-.gradio-container {max-width: 1440px !important; background: #f6f8fb;}
-.hero {padding: 2rem; border-radius: 22px; color: white; background: linear-gradient(125deg,#071c33,#0a4b5c 56%,#198f75); box-shadow: 0 18px 44px rgba(7,28,51,.18); margin-bottom: 1rem;}
-.hero h1 {font-size: 2.35rem; margin: 0 0 .35rem; letter-spacing: -.03em;}
-.hero p {max-width: 850px; margin: .35rem 0; color: #d8f3ee;}
-.hero a {color: #fff; font-weight: 650;}
-.pipeline {display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0 20px;}
-.pipeline div,.assessment-card,.metric-card {background:white;border:1px solid #dce6ed;border-radius:16px;padding:16px;box-shadow:0 6px 18px rgba(20,50,70,.06);}
-.pipeline b {display:block;color:#0c5262;margin-bottom:5px}.pipeline span,.micro-note {color:#667985;font-size:.87rem;}
+.gradio-container {max-width: 1380px !important; background: #f4f7f9; color:#172b35;}
+.hero {padding: 1.55rem 1.8rem; border-radius: 20px; color:#fff !important; background: linear-gradient(118deg,#071d31 0%,#0c4656 58%,#13806b 100%); box-shadow:0 14px 36px rgba(7,29,49,.22); margin: .35rem 0 .8rem;}
+.hero-grid {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center;}
+.hero h1,#hero-title {font-size:2.25rem;line-height:1.08;margin:.3rem 0 .5rem;letter-spacing:-.035em;color:#fff !important;text-shadow:0 1px 1px rgba(0,0,0,.12);}
+.hero p {max-width:800px;margin:.35rem 0;color:#e5f7f5 !important;font-size:.98rem;line-height:1.5;}
+.hero .eyebrow {color:#8ff0dc !important;}.hero-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.hero-links a{color:#fff!important;text-decoration:none;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.09);padding:5px 10px;border-radius:999px;font-size:.8rem;font-weight:700}.hero-links a:hover{background:rgba(255,255,255,.18)}
+.hero-stats{display:grid;grid-template-columns:repeat(2,88px);gap:8px}.hero-stats div{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);border-radius:13px;padding:11px;text-align:center}.hero-stats strong{display:block;color:#fff;font-size:1.3rem}.hero-stats span{color:#cce9e5;font-size:.7rem}
+.method-strip {display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 1rem;}
+.method-strip div,.assessment-card,.metric-card {background:white;border:1px solid #d9e4e9;border-radius:13px;padding:12px 14px;box-shadow:0 4px 14px rgba(20,50,70,.045);}
+.method-strip b {display:block;color:#0b5363;margin-bottom:3px;font-size:.86rem}.method-strip span,.micro-note {color:#617681;font-size:.78rem;}
 .summary-grid {display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:12px 0;}
 .metric-card span,.eyebrow {display:block;color:#66808c;font-size:.72rem;font-weight:750;letter-spacing:.1em;text-transform:uppercase;}
 .metric-card strong {display:block;font-size:1.45rem;margin:6px 0;color:#113544;}.metric-card small {color:#60747e;}
@@ -389,41 +398,60 @@ CSS = """
 .prob-row {display:grid;grid-template-columns:155px 1fr 62px;gap:10px;align-items:center;margin:8px 0;font-size:.86rem;}
 .prob-row b {text-align:right}.prob-track {height:9px;background:#e5edf1;border-radius:20px;overflow:hidden}.prob-track i {display:block;height:100%;background:linear-gradient(90deg,#169c7d,#36b7c5);border-radius:20px;}
 .section-note {padding:12px 14px;border-left:4px solid #15947a;background:#eef9f6;border-radius:8px;color:#315c62;}
-.case-panel {padding:16px 18px;border:1px solid #dce6ed;border-radius:16px;background:#fff;margin:8px 0 14px}.case-panel h3{margin:0 0 4px;color:#123c49}.case-panel p{margin:0;color:#647984}
-@media(max-width:850px){.pipeline,.summary-grid{grid-template-columns:1fr}.prob-row{grid-template-columns:115px 1fr 56px}}
+.case-heading{display:flex;justify-content:space-between;align-items:end;margin:.35rem 2px .5rem}.case-heading h2{margin:0;color:#123746;font-size:1.2rem}.case-heading p{margin:0;color:#647984;font-size:.82rem}
+.case-card {background:#fff;border:1px solid #d7e2e8!important;border-radius:15px!important;padding:8px!important;box-shadow:0 6px 16px rgba(20,50,70,.06);min-width:0}.case-card:hover{border-color:#62a99a!important;box-shadow:0 9px 22px rgba(20,80,70,.1)}
+.case-thumb {border-radius:10px!important;overflow:hidden;background:#e7eef1}.case-thumb img{object-fit:cover!important;image-rendering:auto!important}.case-card h3{margin:2px 2px 0!important;color:#143643;font-size:.92rem!important}.case-card p{margin:0 2px 3px!important;color:#667b85;font-size:.73rem!important;line-height:1.35}.case-card button{min-height:34px!important;font-size:.78rem!important}
+.case-note{background:#eaf7f3;border:1px solid #b9ded3;border-radius:11px;padding:1px 12px;margin:.4rem 0 .75rem}.case-note h3{font-size:.95rem;margin:.6rem 0 .2rem}.case-note p{font-size:.8rem}
+.workspace-title h3{margin-bottom:.25rem!important}.controls-card{background:#fff;border:1px solid #dae5ea;border-radius:15px;padding:14px!important}
+@media(max-width:850px){.hero-grid{grid-template-columns:1fr}.hero-stats{display:none}.method-strip,.summary-grid{grid-template-columns:1fr}.prob-row{grid-template-columns:115px 1fr 56px}.case-heading{display:block}}
 """
 
 
 with gr.Blocks(title="Satellite Vision Toolkit Pro", css=CSS, theme=gr.themes.Soft()) as demo:
     gr.HTML("""
-    <div class="hero">
-      <div class="eyebrow" style="color:#8ee5d2">REMOTE SENSING DECISION SUPPORT</div>
-      <h1>🛰️ Satellite Vision Toolkit Pro</h1>
-      <p>A multi-level workbench for scene-level land-use/land-cover classification, pixel-level cover mapping, and overhead object detection.</p>
-      <p><a href="https://github.com/LabMingzeChen/SatelliteVisionToolkit">GitHub</a> · <a href="https://huggingface.co/mrm8488/convnext-tiny-finetuned-eurosat">LULC model</a> · <a href="https://huggingface.co/mfaytin/mask2former-satellite">Segmentation model</a> · <a href="https://huggingface.co/bluelabel/satellite-equipment-detection-yolov8n-vhr10">Detection model</a></p>
-    </div>
-    <div class="pipeline">
+    <div class="hero"><div class="hero-grid"><div>
+      <div class="eyebrow">URBAN REMOTE SENSING WORKBENCH</div>
+      <h1 id="hero-title">Satellite Vision Toolkit</h1>
+      <p>Clear, multi-level interpretation of local urban overhead imagery—from whole-scene LULC context to pixel cover and individual objects.</p>
+      <div class="hero-links"><a href="https://github.com/LabMingzeChen/SatelliteVisionToolkit">GitHub</a><a href="https://huggingface.co/mrm8488/convnext-tiny-finetuned-eurosat">LULC model</a><a href="https://huggingface.co/mfaytin/mask2former-satellite">Segmentation</a><a href="https://huggingface.co/bluelabel/satellite-equipment-detection-yolov8n-vhr10">Detection</a></div>
+    </div><div class="hero-stats"><div><strong>3</strong><span>MODEL LEVELS</span></div><div><strong>4</strong><span>URBAN CASES</span></div><div><strong>10</strong><span>LULC CLASSES</span></div><div><strong>10</strong><span>OBJECT TYPES</span></div></div></div></div>
+    <div class="method-strip">
       <div><b>01 · Scene classification</b><span>EuroSAT probability profile across 10 LULC scene types.</span></div>
       <div><b>02 · Semantic segmentation</b><span>Per-pixel OpenEarthMap land-cover composition and masks.</span></div>
       <div><b>03 · Object detection</b><span>Bounding boxes and inventory-style summaries for 10 VHR object types.</span></div>
     </div>
     """)
-    gr.HTML("<div class='case-panel'><h3>Guided case studies</h3><p>Load a documented NASA scene, review the analytical question, then run the complete assessment or an individual model.</p></div>")
+    gr.HTML("<div class='case-heading'><h2>Urban sample scenes</h2><p>High-resolution 256×256 USGS aerial chips · click any card to load</p></div>")
     with gr.Row():
-        indus_case = gr.Button("🌾 Indus agriculture")
-        lluta_case = gr.Button("🏜️ Lluta desert valley")
-        zambezi_case = gr.Button("🌊 Zambezi floodplain")
-    case_note = gr.Markdown("Select a case study to load its image and methodological prompt.")
+        with gr.Column(elem_classes="case-card"):
+            gr.Image("assets/cases/dense_residential.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Markdown("### Dense residential\nBuildings · streets · impervious cover")
+            residential_case = gr.Button("Load residential scene")
+        with gr.Column(elem_classes="case-card"):
+            gr.Image("assets/cases/urban_intersection.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Markdown("### Urban intersection\nRoads · vehicles · pavement")
+            intersection_case = gr.Button("Load intersection scene")
+        with gr.Column(elem_classes="case-card"):
+            gr.Image("assets/cases/harbor_marina.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Markdown("### Marina / harbor\nWater · boats · harbor context")
+            harbor_case = gr.Button("Load harbor scene")
+        with gr.Column(elem_classes="case-card"):
+            gr.Image("assets/cases/parking_lot.jpg", show_label=False, height=132, interactive=False, elem_classes="case-thumb")
+            gr.Markdown("### Parking lot\nPavement · dense small vehicles")
+            parking_case = gr.Button("Load parking scene")
+    case_note = gr.Markdown("Select an urban case to load its acquisition details and analysis prompt.", elem_classes="case-note")
     with gr.Row(equal_height=True):
-        image_input = gr.Image(type="pil", label="Satellite / aerial RGB image", height=430)
-        with gr.Column():
-            gr.Markdown("### Analysis controls\nTune reproducible thresholds, then run the complete assessment or an individual method.")
-            top_k = gr.Slider(3, 10, value=5, step=1, label="LULC alternatives (top-k)")
-            opacity = gr.Slider(0.1, 0.9, value=0.55, step=0.05, label="Segmentation overlay opacity")
-            min_share = gr.Slider(0.0, 5.0, value=0.1, step=0.1, label="Minimum reported cover share (%)")
-            confidence = gr.Slider(0.05, 0.9, value=0.25, step=0.05, label="Detection confidence threshold")
-            iou = gr.Slider(0.1, 0.9, value=0.45, step=0.05, label="Detection NMS IoU threshold")
+        image_input = gr.Image(type="pil", label="Analysis image", height=380)
+        with gr.Column(elem_classes="controls-card"):
+            gr.Markdown("### Run analysis\nUpload your own image or start with an urban case. Default settings suit most previews.", elem_classes="workspace-title")
             analyze_button = gr.Button("Run complete professional assessment", variant="primary", size="lg")
+            with gr.Accordion("Advanced thresholds", open=False):
+                top_k = gr.Slider(3, 10, value=5, step=1, label="LULC alternatives (top-k)")
+                opacity = gr.Slider(0.1, 0.9, value=0.55, step=0.05, label="Segmentation overlay opacity")
+                min_share = gr.Slider(0.0, 5.0, value=0.1, step=0.1, label="Minimum reported cover share (%)")
+                confidence = gr.Slider(0.05, 0.9, value=0.25, step=0.05, label="Detection confidence threshold")
+                iou = gr.Slider(0.1, 0.9, value=0.45, step=0.05, label="Detection NMS IoU threshold")
+            gr.Markdown("**Best for:** local RGB satellite/aerial chips where buildings, roads, water, or supported objects are visible. Results are model estimates, not surveyed GIS data.")
 
     with gr.Tabs():
         with gr.Tab("Executive overview"):
@@ -496,16 +524,20 @@ with gr.Blocks(title="Satellite Vision Toolkit Pro", css=CSS, theme=gr.themes.So
 **Interpretation guardrails:** EuroSAT is a European Sentinel-2 scene dataset; classification may shift on other sensors, regions, resolutions, or crops. Pixel shares are not automatically physical ground-area shares. Pixel-coordinate GeoJSON is not georeferenced. Models can miss small or obscured objects. Do not use outputs alone for legal, surveillance, emergency, navigation, or safety-critical decisions.
             """)
 
-    indus_case.click(
-        lambda: load_case_study("indus"),
+    residential_case.click(
+        lambda: load_case_study("residential"),
         outputs=[image_input, case_note],
     )
-    lluta_case.click(
-        lambda: load_case_study("lluta"),
+    intersection_case.click(
+        lambda: load_case_study("intersection"),
         outputs=[image_input, case_note],
     )
-    zambezi_case.click(
-        lambda: load_case_study("zambezi"),
+    harbor_case.click(
+        lambda: load_case_study("harbor"),
+        outputs=[image_input, case_note],
+    )
+    parking_case.click(
+        lambda: load_case_study("parking"),
         outputs=[image_input, case_note],
     )
 

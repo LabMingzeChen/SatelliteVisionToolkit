@@ -50,17 +50,18 @@ Every run creates visual and machine-readable outputs:
 - Independent Gradio API endpoints at `/classify`, `/segment`, `/detect`, and `/analyze`.
 - A reusable Codex skill and command-line Space client.
 
-## Guided case studies
+## Urban sample scenes
 
-The interface includes three one-click NASA Earth Observatory cases. Each case loads the reference image and shows the acquisition context, recommended analytical question, and source attribution.
+The interface includes four visible, one-click urban chips from the [UC Merced Land Use dataset](https://huggingface.co/datasets/blanchon/UC_Merced). Each is a 256×256 RGB aerial image at approximately 0.3 m spatial resolution, derived from USGS National Map Urban Area Imagery.
 
-| Case | Sensor / date | Suggested use |
+| Case | Urban features | Suggested use |
 |---|---|---|
-| [Indus River irrigated agriculture](https://earthobservatory.nasa.gov/images/52076/seasonal-changes-along-the-indus-river) | Landsat 5 TM / 2009-09-10 | Compare crop and river scene alternatives with cropland/water pixel shares |
-| [Lluta River desert agriculture](https://earthobservatory.nasa.gov/images/82296/lluta-river-chile) | EO-1 ALI / 2012-07-19 | Inspect ambiguity where narrow irrigated valleys cross dominant bare land |
-| [Zambezi wet-season floodplain](https://earthobservatory.nasa.gov/images/80835/wet-season-transforms-the-zambezi-river) | EO-1 ALI / 2013-03-31 | Evaluate water, vegetation, and bare-land composition |
+| Dense residential | roofs, streets, impervious surfaces | Review residential LULC confidence and building/pavement segmentation |
+| Urban intersection | road markings, pavement, small vehicles | Test road segmentation and the limits of small-object detection |
+| Marina / harbor | water, docks, tightly spaced boats | Compare water cover with ship/harbor predictions |
+| Parking lot | pavement and tightly packed vehicles | Probe pavement share and vehicle detection sensitivity |
 
-These are method-exploration examples, not ground-truth demonstrations. The imagery remains credited to NASA Earth Observatory and the source instrument teams.
+These images are method-exploration examples, not ground-truth demonstrations. Their sub-meter aerial scale differs substantially from the EuroSAT classifier's Sentinel-2 training domain, so classification results should be interpreted as domain-shifted hypotheses.
 
 ## How it works
 

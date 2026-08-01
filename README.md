@@ -31,6 +31,8 @@ short_description: LULC classification, segmentation, and object detection.
 
 </div>
 
+![Four high-resolution urban sample scenes: dense residential, intersection, marina, and parking lot](assets/results/urban_case_gallery.png)
+
 ## What it does
 
 The app provides three complementary analytical levels plus a one-click combined workflow:
@@ -62,6 +64,34 @@ The interface includes four visible, one-click urban chips from the [UC Merced L
 | Parking lot | pavement and tightly packed vehicles | Probe pavement share and vehicle detection sensitivity |
 
 These images are method-exploration examples, not ground-truth demonstrations. Their sub-meter aerial scale differs substantially from the EuroSAT classifier's Sentinel-2 training domain, so classification results should be interpreted as domain-shifted hypotheses.
+
+## Real model results
+
+The cards below are reproducible outputs returned by the live Space `/classify` endpoint on July 31, 2026. They show the original urban chip, top-five EuroSAT probabilities, normalized entropy, and measured GPU inference time.
+
+### Dense residential case
+
+![Actual scene-level LULC result for the dense residential sample](assets/results/dense_residential_result.png)
+
+| Top prediction | Probability | Normalized entropy | Runtime |
+|---|---:|---:|---:|
+| Industrial | 79.97% | 0.388 | 4.6 s |
+
+### Parking-lot case
+
+![Actual scene-level LULC result for the urban parking-lot sample](assets/results/parking_lot_result.png)
+
+| Top prediction | Probability | Normalized entropy | Runtime |
+|---|---:|---:|---:|
+| Industrial | 60.29% | 0.569 | 1.3 s |
+
+> **Why both results say “Industrial”:** this is a useful domain-shift finding, not a corrected label. The classifier learned from 10 m Sentinel-2 EuroSAT tiles, while these examples are approximately 0.3 m aerial chips. The full probability profile and entropy expose that uncertainty. Use pixel segmentation and object detection as complementary evidence rather than treating the scene label as ground truth.
+
+The committed values are stored in [`assets/results/urban_case_results.json`](assets/results/urban_case_results.json). Regenerate the presentation graphics with:
+
+```bash
+python scripts/build_readme_examples.py
+```
 
 ## How it works
 
@@ -150,6 +180,9 @@ SatelliteVisionToolkit/
 ├── app.py                     Gradio UI and inference workflows
 ├── satellite_utils.py         Rendering, summaries, CSV, and GeoJSON exports
 ├── scripts/satellite_client.py
+├── scripts/build_readme_examples.py
+├── assets/cases/                Urban source images
+├── assets/results/              README gallery, result cards, and result JSON
 ├── tests/                     Lightweight deterministic tests
 ├── skills/                    Reusable Codex workflow
 └── .codex-plugin/plugin.json  Codex plugin manifest
